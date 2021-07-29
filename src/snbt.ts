@@ -17,7 +17,7 @@ export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string 
         const q = quoteChar != null
             ? quoteChar
             : text.split('"', 4).length > text.split("'", 4).length ? "'" : '"'
-        return `${q}${text.replace(q, `\\${q}`)}${q}`
+        return `${q}${text.replaceAll("\\", "\\\\").replaceAll(q, `\\${q}`)}${q}`
     }
 
     function stringify(tag: nbt.Tag, depth: number): string {

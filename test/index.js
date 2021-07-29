@@ -39,3 +39,9 @@ assert.throws(() => nbt.parse(`[,""]`))
 
 assert.strictEqual(typeof nbt.parse("1bb"), "string")
 assert.strictEqual(typeof nbt.parse("1.0.0"), "string")
+
+assert.strictEqual(nbt.parse('"\\\\"'), "\\", "escape backslash")
+assert.strictEqual(nbt.stringify(nbt.parse('"\\\\"')), '"\\\\"', "escape backslash")
+
+assert.strictEqual(nbt.parse(`"'\\"'\\""`), `'"'"`, "escape quote")
+assert.strictEqual(nbt.stringify(nbt.parse(`"'\\"'\\""`)), `"'\\"'\\""`, "escape quote")
