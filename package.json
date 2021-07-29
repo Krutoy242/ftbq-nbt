@@ -21,7 +21,7 @@
   "author": "Janis Pritzkau <janispritzkau@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^10.14.19",
-    "typescript": "^3.6.3"
+    "@types/node": "^10.17.60",
+    "typescript": "^3.9.10"
   }
 }
