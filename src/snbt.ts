@@ -6,12 +6,15 @@ export interface StringifyOptions {
     pretty?: boolean
     breakLength?: number
     quote?: "single" | "double"
+    tab?: string
+    newline?: string
 }
 
 export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string {
     const pretty = !!options.pretty, breakLength = options.breakLength || 70
     const quoteChar = options.quote == "single" ? "'" : options.quote == "double" ? '"' : null
-    const spaces = " ".repeat(4)
+    const spaces = options.tab || " ".repeat(4)
+    const nl = options.newline || "\n"
 
     function escapeString(text: string) {
         const q = quoteChar != null
@@ -22,6 +25,7 @@ export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string 
 
     function stringify(tag: nbt.Tag, depth: number): string {
         const space = pretty ? " " : "", sep = pretty ? ", " : ","
+        const sep2 = `,${nl}`
         if (tag instanceof nbt.Byte) return `${tag.value}b`
         else if (tag instanceof nbt.Short) return `${tag.value}s`
         else if (tag instanceof nbt.Int) return `${tag.value | 0}`
@@ -38,8 +42,8 @@ export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string 
             const list = tag.map(tag => stringify(tag, depth + 1))
             if (list.reduce((acc, x) => acc + x.length, 0) > breakLength
                 || list.some(text => text.includes("\n"))) {
-                return `[\n${list.map(text => spaces.repeat(depth)
-                    + text).join(",\n")}\n${spaces.repeat(depth - 1)}]`
+                return `[${nl}${list.map(text => spaces.repeat(depth)
+                    + text).join(sep2)}${nl}${spaces.repeat(depth - 1)}]`
             } else {
                 return `[${list.join(sep)}]`
             }
@@ -51,8 +55,8 @@ export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string 
                     return `${key}:${space}${stringify(tag!, depth + 1)}`
                 })
             if (pretty && pairs.reduce((acc, x) => acc + x.length, 0) > breakLength) {
-                return `{\n${pairs.map(text => spaces.repeat(depth)
-                    + text).join(",\n")}\n${spaces.repeat(depth - 1)}}`
+                return `{${nl}${pairs.map(text => spaces.repeat(depth)
+                    + text).join(sep2)}${nl}${spaces.repeat(depth - 1)}}`
             } else {
                 return `{${space}${pairs.join(sep)}${space}}`
             }
@@ -76,7 +80,7 @@ export function parse(text: string, options: ParseOptions = {}) {
 
     function skipWhitespace() {
         while (index < text.length) {
-            if (text[index] != " " && text[index] != "\n") return
+            if (text[index] != " " && text[index] != "\t" && text[index] != "\n" && text[index] != "\r") return
             index += 1
         }
     }

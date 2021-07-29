@@ -45,3 +45,11 @@ assert.strictEqual(nbt.stringify(nbt.parse('"\\\\"')), '"\\\\"', "escape backsla
 
 assert.strictEqual(nbt.parse(`"'\\"'\\""`), `'"'"`, "escape quote")
 assert.strictEqual(nbt.stringify(nbt.parse(`"'\\"'\\""`)), `"'\\"'\\""`, "escape quote")
+
+assert.doesNotThrow(() => {
+    nbt.parse(fs.readFileSync("examples/test_tabs.snbt", "utf8"))
+}, "tabs as whitespaces")
+
+assert.doesNotThrow(() => {
+    nbt.parse(fs.readFileSync("examples/test_crlf.snbt", "utf8"))
+}, "CR LF as new lines")
