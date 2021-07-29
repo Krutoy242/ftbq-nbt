@@ -6,12 +6,15 @@ export interface StringifyOptions {
     pretty?: boolean
     breakLength?: number
     quote?: "single" | "double"
+    skipComma?: boolean
+    useBoolean?: boolean
     tab?: string
     newline?: string
 }
 
 export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string {
     const pretty = !!options.pretty, breakLength = options.breakLength || 70
+    const skipComma = pretty && !!options.skipComma, useBoolean = !!options.useBoolean
     const quoteChar = options.quote == "single" ? "'" : options.quote == "double" ? '"' : null
     const spaces = options.tab || " ".repeat(4)
     const nl = options.newline || "\n"
@@ -25,7 +28,7 @@ export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string 
 
     function stringify(tag: nbt.Tag, depth: number): string {
         const space = pretty ? " " : "", sep = pretty ? ", " : ","
-        const sep2 = `,${nl}`
+        const sep2 = skipComma ? nl : `,${nl}`
         if (tag instanceof nbt.Byte) return `${tag.value}b`
         else if (tag instanceof nbt.Short) return `${tag.value}s`
         else if (tag instanceof nbt.Int) return `${tag.value | 0}`
@@ -34,6 +37,7 @@ export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string 
         else if (typeof tag == "number")
             return Number.isInteger(tag) ? `${tag}.0` : tag.toString()
         else if (typeof tag == "string") return escapeString(tag)
+        else if (typeof tag == "boolean") return useBoolean ? `${tag}` : escapeString(tag.toString())
         else if (tag instanceof Buffer
             || tag instanceof Int8Array) return `[B;${space}${[...tag].join(sep)}]`
         else if (tag instanceof Int32Array) return `[I;${space}${[...tag].join(sep)}]`
@@ -67,6 +71,8 @@ export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string 
 
 export interface ParseOptions {
     useMaps?: boolean
+    skipComma?: boolean
+    useBoolean?: boolean
 }
 
 export function parse(text: string, options: ParseOptions = {}) {
@@ -114,14 +120,19 @@ export function parse(text: string, options: ParseOptions = {}) {
         else return new nbt.Int(+text.slice(i, index))
     }
 
-    function readUnquotedString() {
+    function readUnquotedString(useBoolean = false) {
         i = index
         while (index < text.length) {
             if (!unquotedRegExp.test(text[index])) break
             index++
         }
         if (index - i == 0) throw index == text.length ? unexpectedEnd() : unexpectedChar()
-        return text.slice(i, index)
+        const str = text.slice(i, index)
+        if (useBoolean) {
+            if (str === "true") return true
+            else if (str === "false") return false
+        }
+        return str
     }
 
     function readQuotedString() {
@@ -140,7 +151,7 @@ export function parse(text: string, options: ParseOptions = {}) {
 
     function readString() {
         if (text[index] == '"' || text[index] == "'") return readQuotedString()
-        else return readUnquotedString()
+        else return readUnquotedString() as string
     }
 
     function skipCommas(isFirst: boolean, end: string) {
@@ -149,7 +160,7 @@ export function parse(text: string, options: ParseOptions = {}) {
             if (isFirst) throw unexpectedChar()
             else index++ , skipWhitespace()
         } else if (!isFirst && text[index] != end) {
-            throw unexpectedChar()
+            if (!options.skipComma) throw unexpectedChar()
         }
     }
 
@@ -164,7 +175,7 @@ export function parse(text: string, options: ParseOptions = {}) {
                     ? new Map(entries)
                     : entries.reduce<nbt.TagObject>((obj, [k, v]) => (obj[k] = v, obj), {})
             }
-            const key = readString()
+            const key = readString() as string
             skipWhitespace()
             if (text[index++] != ":") throw unexpectedChar()
             entries.push([key, parse()])
@@ -201,12 +212,7 @@ export function parse(text: string, options: ParseOptions = {}) {
         const array: nbt.TagArray = []
         while (index < text.length) {
             skipWhitespace()
-            if (text[index] == ",") {
-                if (array.length == 0) throw unexpectedChar()
-                else index++ , skipWhitespace()
-            } else if (array.length > 0 && text[index] != "]") {
-                throw unexpectedChar(index - 1)
-            }
+            skipCommas(array.length == 0, "]")
             if (text[index] == "]") return (index++ , array)
             array.push(parse())
         }
@@ -225,7 +231,8 @@ export function parse(text: string, options: ParseOptions = {}) {
         if (value != null && (index == text.length || !unquotedRegExp.test(text[index]))) {
             return value
         }
-        return text.slice(i, index) + readUnquotedString()
+        index = i
+        return readUnquotedString(options.useBoolean)
     }
 
     const value = parse()
