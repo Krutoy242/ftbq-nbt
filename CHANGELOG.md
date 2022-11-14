@@ -2,6 +2,20 @@
 
 All notable changes to this library will be documented here.
 
+## 1.4.0
+
+- Allow using tabs & CRLF for SNBT
+- Allow booleans & skipping commas in SNBT
+- Add `options.strictDouble` for adding `d` at end of TAG_Double
+- Add `options.noTagListTab` changing TAG_List format
+  > Needed for wothking with FTBQuests formatter
+- Empty TAG_Compound - remove spaces
+  > There always should be {} when map is empty. Beore this change it was { }
+- `options.breakLength` now accept `0` as value
+- Split number arrays in lines same manner as tag lists (when pretty and length bigger than `breakLength`)
+- Add `options.strictList` add type postfix for each list element
+  > Required for FTBQuests
+
 ## 1.2.5
 
 - Fixed bug with encoding and decoding `null` tags.
