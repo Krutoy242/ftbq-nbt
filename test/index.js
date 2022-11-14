@@ -77,3 +77,10 @@ assert.strictEqual(nbt.stringify(nbt.parse("{a:1,b:2}"), { pretty: true, skipCom
 
 assert.strictEqual(nbt.stringify(nbt.parse("0.1d")), '0.1')
 assert.strictEqual(nbt.stringify(nbt.parse("0.1"), { strictDouble: true }), '0.1d')
+
+assert.strictEqual(nbt.stringify(nbt.parse("[{a:1},{b:2}]"), { pretty: true, noTagListTab: true, breakLength: 1 }), `[{
+    a: 1
+},
+{
+    b: 2
+}]`)

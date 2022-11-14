@@ -16,6 +16,22 @@ export interface StringifyOptions {
      * By default, JS uses doubles for numbers.
      */
     strictDouble?: boolean
+    
+    /**
+     * Not add spaces at start of line in TAG_List (list of tags).  
+     * Also, join list opening brackets with object brackets.  
+     * @example ```
+     * `[{a:1},{b:2}]` // input
+     * // Output:
+     * `[{
+     *     a: 1
+     * },
+     * {
+     *     b: 2
+     * }]`
+     * ```
+     */
+    noTagListTab?: boolean
 }
 
 export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string {
@@ -57,11 +73,15 @@ export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string 
         else if (tag instanceof Int32Array) return `[I;${space}${[...tag].join(sep)}]`
         else if (tag instanceof BigInt64Array) return `[L;${space}${[...tag].join(sep)}]`
         else if (tag instanceof Array) {
-            const list = tag.map(tag => stringify(tag, depth + 1))
+            const skipTab = options.noTagListTab === true && typeof tag[0] === 'object'
+            const list = tag.map(tag => stringify(tag, depth + +!skipTab))
             if (list.reduce((acc, x) => acc + x.length, 0) > breakLength
-                || list.some(text => text.includes("\n"))) {
-                return `[${nl}${list.map(text => spaces.repeat(depth)
-                    + text).join(sep2)}${nl}${spaces.repeat(depth - 1)}]`
+                || list.some(text => text.includes("\n"))
+            ) {
+                const sList = list.map(text => spaces.repeat(depth - +skipTab) + text).join(sep2)
+                return skipTab 
+                    ? `[${sList.trim()}]`
+                    : `[${nl}${sList}${nl}${spaces.repeat(depth - 1)}]`
             } else {
                 return `[${list.join(sep)}]`
             }
