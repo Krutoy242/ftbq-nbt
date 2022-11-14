@@ -96,7 +96,7 @@ export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string 
                 return `{${nl}${pairs.map(text => spaces.repeat(depth)
                     + text).join(sep2)}${nl}${spaces.repeat(depth - 1)}}`
             } else {
-                return `{${space}${pairs.join(sep)}${space}}`
+                return pairs.length ? `{${space}${pairs.join(sep)}${space}}` : '{}'
             }
         }
     }
