@@ -10,6 +10,12 @@ export interface StringifyOptions {
     useBoolean?: boolean
     tab?: string
     newline?: string
+
+    /**
+     * Add 'd' postfix for TAG_Double.  
+     * By default, JS uses doubles for numbers.
+     */
+    strictDouble?: boolean
 }
 
 export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string {
@@ -43,7 +49,7 @@ export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string 
         else if (typeof tag == "bigint") return `${tag}l`
         else if (tag instanceof nbt.Float) return `${tag.value}f`
         else if (typeof tag == "number")
-            return Number.isInteger(tag) ? `${tag}.0` : tag.toString()
+            return (Number.isInteger(tag) ? `${tag}.0` : tag.toString()) + (options.strictDouble ? 'd' : '')
         else if (typeof tag == "string") return escapeString(tag)
         else if (typeof tag == "boolean") return useBoolean ? `${tag}` : escapeString(tag.toString())
         else if (tag instanceof Buffer

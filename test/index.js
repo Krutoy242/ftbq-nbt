@@ -74,3 +74,6 @@ assert.strictEqual(nbt.stringify(nbt.parse("{a:1,b:2}"), { pretty: true, skipCom
     a: 1
     b: 2
 }`)
+
+assert.strictEqual(nbt.stringify(nbt.parse("0.1d")), '0.1')
+assert.strictEqual(nbt.stringify(nbt.parse("0.1"), { strictDouble: true }), '0.1d')
