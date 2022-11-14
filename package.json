@@ -1,13 +1,13 @@
 {
-  "name": "nbt-ts",
+  "name": "ftbq-nbt",
   "version": "1.3.5",
-  "description": "An easy to use encoder and decoder for the NBT format",
+  "description": "An easy to use encoder and decoder for the NBT format (FTBQuests mod compatible)",
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",
   "types": "lib/esm/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/janispritzkau/nbt-ts.git"
+    "url": "git+https://github.com/Krutoy242/ftbq-nbt.git"
   },
   "scripts": {
     "test": "node test",
@@ -18,9 +18,10 @@
     "nbt",
     "minecraft",
     "typescript",
-    "snbt"
+    "snbt",
+    "ftbquests"
   ],
-  "author": "Janis Pritzkau <janispritzkau@gmail.com>",
+  "author": "krutoy242 <Krutoy242@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^18.11.9",

@@ -1,7 +1,15 @@
 # NBT
 
-[![npm](https://img.shields.io/npm/v/nbt-ts.svg)](https://www.npmjs.com/package/nbt-ts)
-[![downloads](https://img.shields.io/npm/dm/nbt-ts.svg)](https://www.npmjs.com/package/nbt-ts)
+## Fork changes
+
+Enchanced parse / stringify functions to make package working with [FTBQuests](https://www.curseforge.com/minecraft/mc-mods/ftb-quests-forge) mod's `.snbt` file format:
+- Add additional `stringify()` options
+- Fix some `stringify()` errors
+
+## Description
+
+[![npm](https://img.shields.io/npm/v/ftbq-nbt.svg)](https://www.npmjs.com/package/ftbq-nbt)
+[![downloads](https://img.shields.io/npm/dm/ftbq-nbt.svg)](https://www.npmjs.com/package/ftbq-nbt)
 
 An easy to use encoder and decoder for the [NBT format](https://wiki.vg/NBT).
 
