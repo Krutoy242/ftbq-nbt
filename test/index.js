@@ -39,3 +39,38 @@ assert.throws(() => nbt.parse(`[,""]`))
 
 assert.strictEqual(typeof nbt.parse("1bb"), "string")
 assert.strictEqual(typeof nbt.parse("1.0.0"), "string")
+
+assert.strictEqual(nbt.parse('"\\\\"'), "\\", "escape backslash")
+assert.strictEqual(nbt.stringify(nbt.parse('"\\\\"')), '"\\\\"', "escape backslash")
+
+assert.strictEqual(nbt.parse(`"'\\"'\\""`), `'"'"`, "escape quote")
+assert.strictEqual(nbt.stringify(nbt.parse(`"'\\"'\\""`)), `"'\\"'\\""`, "escape quote")
+
+assert.doesNotThrow(() => {
+    nbt.parse(fs.readFileSync("examples/test_tabs.snbt", "utf8"))
+}, "tabs as whitespaces")
+
+assert.doesNotThrow(() => {
+    nbt.parse(fs.readFileSync("examples/test_crlf.snbt", "utf8"))
+}, "CR LF as new lines")
+
+assert.strictEqual(nbt.parse("false"), "false")
+assert.strictEqual(nbt.parse("true"), "true")
+assert.strictEqual(nbt.parse("false", { useBoolean: true }), false)
+assert.strictEqual(nbt.parse("true", { useBoolean: true }), true)
+assert.strictEqual(nbt.parse("'false'", { useBoolean: true }), "false")
+assert.strictEqual(nbt.parse("'true'", { useBoolean: true }), "true")
+
+assert.doesNotThrow(() => {
+    nbt.parse(`
+        {
+            a: 1
+            b: 2
+        }
+    `, { skipComma: true })
+}, "without commas")
+
+assert.strictEqual(nbt.stringify(nbt.parse("{a:1,b:2}"), { pretty: true, skipComma: true, breakLength: 1 }), `{
+    a: 1
+    b: 2
+}`)
