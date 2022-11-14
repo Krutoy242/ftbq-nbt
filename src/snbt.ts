@@ -16,6 +16,11 @@ export interface StringifyOptions {
      * By default, JS uses doubles for numbers.
      */
     strictDouble?: boolean
+
+    /**
+     * Add type postfix for each list element.
+     */
+    strictList?: boolean
     
     /**
      * Not add spaces at start of line in TAG_List (list of tags).  
@@ -77,7 +82,8 @@ export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string 
         }
 
         function arrToStr(arr: string[], arrType: string) {
-            return listToStr(arr, false, arrType)
+            const list = options.strictList ? arr.map(s => s + arrType.toLowerCase()) : arr
+            return listToStr(list, false, arrType)
         }
 
         if (tag instanceof nbt.Byte) return `${tag.value}b`

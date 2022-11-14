@@ -84,3 +84,9 @@ assert.strictEqual(nbt.stringify(nbt.parse("[{a:1},{b:2}]"), { pretty: true, noT
 {
     b: 2
 }]`)
+
+assert.strictEqual(nbt.stringify(nbt.parse("[B;0,1]"), { pretty: true, strictList: true, breakLength: 0 }),
+`[B;
+    0b,
+    1b
+]`)
