@@ -59,6 +59,23 @@ export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string 
     function stringify(tag: nbt.Tag, depth: number): string {
         const space = pretty ? " " : "", sep = pretty ? ", " : ","
         const sep2 = skipComma ? nl : `,${nl}`
+
+        function isMultiline(list:string[]) {
+            return list.reduce((acc, x) => acc + x.length, 0) > breakLength
+                || list.some(text => text.includes("\n"))
+        }
+
+        function listToStr(list: string[], skipTab: boolean) {
+            if (isMultiline(list)) {
+                const tabbedList = list.map(s => spaces.repeat(depth - +skipTab) + s).join(sep2)
+                return skipTab
+                    ? `[${tabbedList.trim()}]`
+                    : `[${nl}${tabbedList}${nl}${spaces.repeat(depth - 1)}]`
+            } else {
+                return `[${list.join(sep)}]`
+            }
+        }
+
         if (tag instanceof nbt.Byte) return `${tag.value}b`
         else if (tag instanceof nbt.Short) return `${tag.value}s`
         else if (tag instanceof nbt.Int) return `${tag.value | 0}`
@@ -75,16 +92,7 @@ export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string 
         else if (tag instanceof Array) {
             const skipTab = options.noTagListTab === true && typeof tag[0] === 'object'
             const list = tag.map(tag => stringify(tag, depth + +!skipTab))
-            if (list.reduce((acc, x) => acc + x.length, 0) > breakLength
-                || list.some(text => text.includes("\n"))
-            ) {
-                const sList = list.map(text => spaces.repeat(depth - +skipTab) + text).join(sep2)
-                return skipTab 
-                    ? `[${sList.trim()}]`
-                    : `[${nl}${sList}${nl}${spaces.repeat(depth - 1)}]`
-            } else {
-                return `[${list.join(sep)}]`
-            }
+            return listToStr(list, skipTab)
         } else {
             const pairs = (tag instanceof Map ? [...tag] : Object.entries(tag)
                 .filter(([_, v]) => v != null))
