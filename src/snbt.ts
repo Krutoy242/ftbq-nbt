@@ -35,7 +35,7 @@ export interface StringifyOptions {
 }
 
 export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string {
-    const pretty = !!options.pretty, breakLength = options.breakLength || 70
+    const pretty = !!options.pretty, breakLength = options.breakLength ?? 70
     const skipComma = pretty && !!options.skipComma, useBoolean = !!options.useBoolean
     const quoteChar = options.quote == "single" ? "'" : options.quote == "double" ? '"' : null
     const spaces = options.tab || " ".repeat(4)
