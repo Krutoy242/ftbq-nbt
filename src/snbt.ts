@@ -65,15 +65,19 @@ export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string 
                 || list.some(text => text.includes("\n"))
         }
 
-        function listToStr(list: string[], skipTab: boolean) {
+        function listToStr(list: string[], skipTab: boolean, arrT?: string) {
             if (isMultiline(list)) {
                 const tabbedList = list.map(s => spaces.repeat(depth - +skipTab) + s).join(sep2)
                 return skipTab
                     ? `[${tabbedList.trim()}]`
-                    : `[${nl}${tabbedList}${nl}${spaces.repeat(depth - 1)}]`
+                    : `[${arrT ? `${arrT};` : ''}${nl}${tabbedList}${nl}${spaces.repeat(depth - 1)}]`
             } else {
-                return `[${list.join(sep)}]`
+                return `[${arrT ? `${arrT};${space}` : ''}${list.join(sep)}]`
             }
+        }
+
+        function arrToStr(arr: string[], arrType: string) {
+            return listToStr(arr, false, arrType)
         }
 
         if (tag instanceof nbt.Byte) return `${tag.value}b`
@@ -86,9 +90,9 @@ export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string 
         else if (typeof tag == "string") return escapeString(tag)
         else if (typeof tag == "boolean") return useBoolean ? `${tag}` : escapeString(tag.toString())
         else if (tag instanceof Buffer
-            || tag instanceof Int8Array) return `[B;${space}${[...tag].join(sep)}]`
-        else if (tag instanceof Int32Array) return `[I;${space}${[...tag].join(sep)}]`
-        else if (tag instanceof BigInt64Array) return `[L;${space}${[...tag].join(sep)}]`
+            || tag instanceof Int8Array) return arrToStr([...tag].map(String), 'B')
+        else if (tag instanceof Int32Array) return arrToStr([...tag].map(String), 'I')
+        else if (tag instanceof BigInt64Array) return arrToStr([...tag].map(String), 'L')
         else if (tag instanceof Array) {
             const skipTab = options.noTagListTab === true && typeof tag[0] === 'object'
             const list = tag.map(tag => stringify(tag, depth + +!skipTab))
