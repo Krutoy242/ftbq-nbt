@@ -76,7 +76,7 @@ assert.strictEqual(nbt.stringify(nbt.parse("{a:1,b:2}"), { pretty: true, skipCom
 }`)
 
 assert.strictEqual(nbt.stringify(nbt.parse("0.1d")), '0.1')
-assert.strictEqual(nbt.stringify(nbt.parse("0.1"), { strictDouble: true }), '0.1d')
+assert.strictEqual(nbt.stringify(nbt.parse("0.1"), { typePostfix: { D: 'd' } }), '0.1d')
 
 assert.strictEqual(nbt.stringify(nbt.parse("[{a:1},{b:2}]"), { pretty: true, noTagListTab: true, breakLength: 1 }), `[{
     a: 1
@@ -85,8 +85,4 @@ assert.strictEqual(nbt.stringify(nbt.parse("[{a:1},{b:2}]"), { pretty: true, noT
     b: 2
 }]`)
 
-assert.strictEqual(nbt.stringify(nbt.parse("[B;0,1]"), { pretty: true, strictList: true, breakLength: 0 }),
-`[B;
-    0b,
-    1b
-]`)
+assert.strictEqual(nbt.stringify(nbt.parse("{a:[B;0,1],b:[I;0,1]}"), { arrayPostfix: { B:'b' } }), `{a:[B;0b,1b],b:[I;0,1]}`)

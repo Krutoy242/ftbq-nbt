@@ -10,17 +10,6 @@ export interface StringifyOptions {
     useBoolean?: boolean
     tab?: string
     newline?: string
-
-    /**
-     * Add 'd' postfix for TAG_Double.  
-     * By default, JS uses doubles for numbers.
-     */
-    strictDouble?: boolean
-
-    /**
-     * Add type postfix for each list element.
-     */
-    strictList?: boolean
     
     /**
      * Not add spaces at start of line in TAG_List (list of tags).  
@@ -37,6 +26,39 @@ export interface StringifyOptions {
      * ```
      */
     noTagListTab?: boolean
+
+    /**
+     * Character to add at the end of each typed value
+     */
+    typePostfix?: {
+        
+        /** @default '' */
+        I?: string
+        
+        /** @default 'f' */
+        F?: string
+        
+        /** @default '' */
+        D?: string
+        
+        /** @default 'b' */
+        B?: string
+        
+        /** @default 's' */
+        S?: string
+        
+        /** @default 'l' */
+        L?: string
+    }
+
+    /**
+     * Add type postfix for each list element.
+     */
+    arrayPostfix?: {
+        B?: string
+        I?: string
+        L?: string
+    }
 }
 
 export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string {
@@ -81,18 +103,18 @@ export function stringify(tag: nbt.Tag, options: StringifyOptions = {}): string 
             }
         }
 
-        function arrToStr(arr: string[], arrType: string) {
-            const list = options.strictList ? arr.map(s => s + arrType.toLowerCase()) : arr
+        function arrToStr(arr: string[], arrType: 'B' | 'I' | 'L',) {
+            const postfix = options.arrayPostfix?.[arrType]
+            const list = postfix ? arr.map(s => s + postfix) : arr
             return listToStr(list, false, arrType)
         }
 
-        if (tag instanceof nbt.Byte) return `${tag.value}b`
-        else if (tag instanceof nbt.Short) return `${tag.value}s`
-        else if (tag instanceof nbt.Int) return `${tag.value | 0}`
-        else if (typeof tag == "bigint") return `${tag}l`
-        else if (tag instanceof nbt.Float) return `${tag.value}f`
-        else if (typeof tag == "number")
-            return (Number.isInteger(tag) ? `${tag}.0` : tag.toString()) + (options.strictDouble ? 'd' : '')
+        if (tag instanceof nbt.Byte) return `${tag.value}${options.typePostfix?.B ?? 'b'}`
+        else if (tag instanceof nbt.Short) return `${tag.value}${options.typePostfix?.S ?? 's'}`
+        else if (tag instanceof nbt.Int) return `${tag.value | 0}${options.typePostfix?.I ?? ''}`
+        else if (typeof tag == "bigint") return `${tag}${options.typePostfix?.L ?? 'l'}`
+        else if (tag instanceof nbt.Float) return `${tag.value}${options.typePostfix?.F ?? 'f'}`
+        else if (typeof tag == "number") return (Number.isInteger(tag) ? `${tag}.0` : tag.toString()) + (options.typePostfix?.D ?? '')
         else if (typeof tag == "string") return escapeString(tag)
         else if (typeof tag == "boolean") return useBoolean ? `${tag}` : escapeString(tag.toString())
         else if (tag instanceof Buffer
