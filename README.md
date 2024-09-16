@@ -1,10 +1,8 @@
 # NBT
 
-## Fork changes
+## 🍴 Fork changes
 
-Enchanced parse / stringify functions to make package working with [FTBQuests](https://www.curseforge.com/minecraft/mc-mods/ftb-quests-forge) mod's `.snbt` file format:
-- Add additional `stringify()` options
-- Fix some `stringify()` errors
+Enchanced parse / stringify functions to make package working with [FTBQuests](https://www.curseforge.com/minecraft/mc-mods/ftb-quests-forge) mod's `.snbt` file format. See real usage examples [here](https://github.com/Krutoy242/mc-tools/blob/8fcf43db35218c5003e1711a1da1316d18ebe397/packages/utils/src/mods/ftbquests.ts#L109-L119).
 
 ## Description
 
